@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+  <body>
+    <p>Choose your vechicle:</p>
+    <div>
+      <input type="checkbox" id="bike" name="vechicle[]" value="bike">
+      <label for="bike">Bike</label>
+    </div>
+    <div>
+      <input type="checkbox" id="car" name="vechicle[]" value="car">
+      <label for="car">Car</label>
+    </div>
+    <div>
+      <input type="checkbox" id="select-all">
+      <label for="car">Select All</label>
+    </div>
+  </body>
+</html>
+<script>
+document.getElementById('select-all').onclick = function() {
+  var checkboxes = document.getElementsByName('vechicle[]');
+  for (var checkbox of checkboxes) {
+    checkbox.checked = this.checked;
+  }
+}
+</script>

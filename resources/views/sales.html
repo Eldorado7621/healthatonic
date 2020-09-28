@@ -1,0 +1,174 @@
+@extends('layouts.app')
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>  
+@section('content')
+@if (session('success'))
+			 <div class="alert alert-success alert-dismissible">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                <h4><i class="icon fa fa-check"></i> Alert!</h4>
+               <h4> Done!!!{{session('success')}}</h4>
+              </div>
+              
+			@endif
+    <div class="header bg-gradient-primary pb-8 pt-5 pt-md-12">
+    <div class="container-fluid">
+        <div class="row mt-">
+            <div class="col-xl-12 mb-8 mb-xl-0">
+             <div class="col-xl-4 " style="float:left;">
+                    <div align="center">  
+                     <input type="text" name="search" id="search" placeholder="search"class="form-control" />  
+                </div>  
+				<div class="table-responsive" >  
+                     <table class="table table-bordered" id="employee_table">  
+                          <tr> 
+                               <th width="25%">Name</th> 
+                          </tr>  
+                           <tr>  <td onclick="ono('item1');">
+							<input type="text" name="" value="175" readonly />
+							<input type="hidden" name="name[]" id="item1_name" value="cucumber"/>
+							<input type="hidden" name="price[]" id="item1_price" value="51"/></td>
+						   </tr>  
+						   <tr class="item2">  <td onclick="ono('item2');">
+							<input type="text" name="" value="176" readonly />
+							<input type="hidden" name="name[]" id="item2_name" value="apple"/>
+							<input type="hidden" name="price[]" id="item2_price"  value="50"/></td>
+						   </tr>  
+						   <tr class="item3">  <td onclick="ono('item3');">
+							<input type="text" name="item3_name" value="177" readonly />
+							<input type="hidden" name="name[]" id="item3_name" value="mango"/>
+							<input type="hidden" name="price[]" id="item3_price"  value="55" /></td>
+						   </tr>  
+							
+                              
+                        </table>  
+                <input type="submit" onclick="ono();"/>
+                </div>
+                </div>
+			<div class="col-xl-8" style="float:right;">
+				<div class="">
+                <form method="post" id="dynamic_form">
+                 <span id="result"></span>
+                 <table class="table table-bordered table-striped" id="user_table">
+				  <thead>
+                   <tr>
+                    <th width="50%"style="color:white">Name</th>
+                    <th width="15%" style="color:white">Price </th>
+                    <th width="15%" style="color:white">Quantity</th>
+                    <th width="15%" style="color:white">Total</th>
+                  </tr>
+               </thead>
+					<tbody class="tt">
+
+					</tbody>
+               <tfoot>
+                <tr>
+                                <td colspan="2" align="right"></td>
+                                <td>
+                  @csrf
+                  <input type="submit" name="save" id="save" class="btn btn-primary" value="Save"  />
+                 </td>
+                </tr>
+               </tfoot>
+           </table>
+                </form>
+   </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+  
+
+  <div class="container-fluid mt--7">
+        @include('layouts.footers.auth')
+    </div>
+@endsection
+  <script>  
+  var count = 1;
+
+  function ono(id)
+{
+	var ele=document.getElementById(id);
+	//window.alert(id);
+	var name=document.getElementById(id+"_name").value;
+	var price=document.getElementById(id+"_price").value;
+	//window.alert(count);
+	
+	count++;
+	html = '<tr>';
+        html += '<td><input type="text" name="name[]" value="'+name+'"  style="width:100px;" readonly /></td></br>';
+        html += '<td><input type="text" name="price[]" value="'+price+'" id="price'+count+'" readonly style="width:60px;" /></td>';
+        html += '<td><input type="number" name="qtty[]" value="1" style="width:60px;" id="qtty'+count+'" onkeyup="calc('+count+')" /></td>';
+        html += '<td><input type="number" name="total[]" id="total'+count+'" value="'+price+'" style="width:60px;"  /></td>';
+		 html += '<td><button type="button" name="remove" id="" class="btn btn-danger remove">Remove</button></td></tr>';
+            $('.tt').append(html);
+}
+function calc(id)
+{
+	price=document.getElementById("price"+id).value;
+	qtty=document.getElementById("qtty"+id).value;
+	document.getElementById("total"+id).value=price*qtty;
+}
+
+      $(document).ready(function(){  
+           $('#search').keyup(function(){  
+                search_table($(this).val());  
+           });  
+           function search_table(value){  
+                $('#employee_table tr').each(function(){  
+                     var found = 'false';  
+                     $(this).each(function(){  
+                          if($(this).text().toLowerCase().indexOf(value.toLowerCase()) >= 0)  
+                          {  
+                               found = 'true';  
+                          }  
+                     });  
+                     if(found == 'true')  
+                     {  
+                          $(this).show();  
+                     }  
+                     else  
+                     {  
+                          $(this).hide();  
+                     }  
+                });  
+           }
+	
+ $(document).on('click', '.remove', function(){
+  count--;
+  $(this).closest("tr").remove();
+ });
+
+ $('#dynamic_form').on('submit', function(event){
+        event.preventDefault();
+        $.ajax({
+            url:'{{ route("create-phc.insert") }}',
+            method:'post',
+            data:$(this).serialize(),
+            dataType:'json',
+            beforeSend:function(){
+                $('#save').attr('disabled','disabled');
+            },
+            success:function(data)
+            {
+                if(data.error)
+                {
+                    var error_html = '';
+                    for(var count = 0; count < data.error.length; count++)
+                    {
+                        error_html += '<p>'+data.error[count]+'</p>';
+                    }
+                    $('#result').html('<div class="alert alert-danger">'+error_html+'</div>');
+                }
+                else
+                {
+                    dynamic_field(1);
+                    $('#result').html('<div class="alert alert-success">'+data.success+'</div>');
+                }
+                $('#save').attr('disabled', false);
+            }
+        })
+ });
+
+		   
+      });  
+ </script>

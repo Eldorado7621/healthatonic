@@ -1,0 +1,20 @@
+<html>
+	<head></head>
+	<body>
+		<button onclick="copy('Lorem ipsffum dolor sit amet\nconsectetur adipiscing elit')">
+		  Copy
+		</button>
+		<script>
+			function copy(text) {
+  var textarea = document.createElement("textarea");
+  textarea.value = text;
+  document.body.appendChild(textarea);
+  textarea.select();
+  document.execCommand("copy");
+  document.body.removeChild(textarea);
+}
+		</script>
+	
+	</body>
+
+</html>
