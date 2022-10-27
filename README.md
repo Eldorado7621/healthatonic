@@ -1,3 +1,3 @@
-#HOSPITAL MANAGEMENT SYSTEM USING PHP (LARAVEL FRAMEWORK)
+## HEALTHATONIC- A HOSPITAL MANAGEMENT SYSTEM
 
-A Hospital Management system that helps to keep health record and manges appointment
+A Hospital Management system that helps to keep health record and manges appointment built using laravel framework
